@@ -1,9 +1,9 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Spine Viewer/Parser",
+  name: "Spine Tools",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+    "PIXI Spine Viewer, Spine Converter, and more.",
   mainNav: [
     {
       title: "Home",
