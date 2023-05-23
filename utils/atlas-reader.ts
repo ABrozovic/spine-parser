@@ -201,16 +201,6 @@ export class AtlasReader {
     return null
   }
 
-  setTextures(assetManager: AssetManagerBase, pathPrefix = "") {
-    for (const page of this.pages)
-      page.setTexture(assetManager.get(pathPrefix + page.name))
-  }
-
-  dispose() {
-    for (let i = 0; i < this.pages.length; i++) {
-      this.pages[i].texture?.dispose()
-    }
-  }
 }
 
 class TextureAtlasReader {
