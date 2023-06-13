@@ -1,3 +1,6 @@
-declare namespace GlobalMixins {
-  interface Spine {}
+declare namespace GlobalMixins
+{
+    interface Spine {
+
+    }
 }

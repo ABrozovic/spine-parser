@@ -81,17 +81,15 @@ const useSpine = () => {
     removeCurrentAnimation()
     spineAnimationRef.current = spine
     const bounds = spine?.getBounds()
-    const initialScale = roundUpToEven(calculateInitialScale(bounds.height), 2)    
+    const initialScale = roundUpToEven(calculateInitialScale(bounds.height), 2)
 
-    setAnimationScale(initialScale)  
+    setAnimationScale(initialScale)
     setAnimationPosition(
       // @ts-expect-error
       Math.round(appRef.current.stage.hitArea.width * 0.5),
       // @ts-expect-error
-      appRef.current.stage.hitArea.bottom          
-    )    
-
-    console.log(appRef.current.stage.toLocal(spine))
+      appRef.current.stage.hitArea.bottom
+    )
 
     setAnimationList(spineAnimationRef.current?.spineData.animations)
     setSpineInstance(spine)

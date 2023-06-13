@@ -1,6 +1,7 @@
 'use strict';
 
 var base = require('@pixi-spine/base');
+var index = require('./runtime-3.4/lib/index.js');
 var spine38 = require('@pixi-spine/runtime-3.8');
 var spine37 = require('@pixi-spine/runtime-3.7');
 var spine41 = require('@pixi-spine/runtime-4.1');
@@ -31,6 +32,9 @@ class Spine extends base.SpineBase {
   createSkeleton(spineData) {
     const ver = versions.detectSpineVersion(spineData.version);
     let spine = null;
+    if (ver === versions.SPINE_VERSION.VER34) {
+      spine = index;
+    }
     if (ver === versions.SPINE_VERSION.VER37) {
       spine = spine37__namespace;
     }

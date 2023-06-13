@@ -3,7 +3,7 @@
 import "pixi-spine"
 import React, { useRef } from "react"
 import Link from "next/link"
-import { Spine, SpineDebugRenderer } from "@/local_modules/pixi-spine"
+import { Spine } from "@/local_modules/pixi-spine"
 import { atlasSchema } from "@/schema/atlas-schema"
 import { imageSchema } from "@/schema/image-schema"
 import { jsonSchema } from "@/schema/json-schema"

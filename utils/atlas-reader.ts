@@ -200,7 +200,6 @@ export class AtlasReader {
     }
     return null
   }
-
 }
 
 class TextureAtlasReader {
