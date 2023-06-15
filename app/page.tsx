@@ -231,7 +231,7 @@ export default function IndexPage() {
               value: i.toString(),
               label: animation.name,
             }))}
-            onChange={(index) => playAnimation(parseInt(index))}
+            onChange={(index) => playAnimation(parseInt(index.value))}
           />
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-6">
             <Button

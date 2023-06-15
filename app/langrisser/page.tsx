@@ -3,12 +3,15 @@
 import "pixi-spine"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { db } from "@/db/db"
 import { Spine } from "@/local_modules/pixi-spine"
 import { atlasSchema } from "@/schema/atlas-schema"
 import { imageSchema } from "@/schema/image-schema"
 import { jsonSchema } from "@/schema/json-schema"
 import { SkelToJson } from "@/utils/converter/skelToJson"
+import { fetchFiles } from "@/utils/fetcher"
 import { readFileAsDataURL } from "@/utils/read-data-url"
+import { useQuery } from "@tanstack/react-query"
 import { Assets } from "pixi.js"
 import * as prettier from "prettier"
 
@@ -18,9 +21,6 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { ComboBox } from "@/components/combobox"
 import useSpine from "@/components/use-spine"
-import { useQuery } from "@tanstack/react-query"
-import { fetchFiles } from "@/utils/fetcher"
-import { db } from "@/db/db"
 
 type SpineUrls = {
   imageUrl?: string | null
@@ -28,28 +28,31 @@ type SpineUrls = {
   atlasUrl?: string | null
 }
 interface Files {
-  atlas?: string| undefined;
-  png?: string| undefined;
-  skel?: string| undefined;
+  atlas?: string | undefined
+  png?: string | undefined
+  skel?: string | undefined
 }
 
 interface Skin {
-  complete: boolean;
-  files: Files;
+  complete: boolean
+  files: Files
 }
 
 interface CharEntry {
-  [skin: string]: Skin;
+  [skin: string]: Skin
 }
 
 interface DB {
-  char: Record<string, CharEntry>;
+  char: Record<string, CharEntry>
 }
 
-
-export default function IndexPage() {  
-  const [currentChar, setCurrentChar]= useState<{png:string, atlas:string, skel:string}>();
-  const charRef= useRef<{png?:string, atlas?:string, skel?:string}>();
+export default function IndexPage() {
+  const charRef = useRef<{ png?: string; atlas?: string; skel?: string }>()
+  const currentCharRef = useRef<{
+    selectedChar: string
+    selectedSkin: string
+    availableSkins: string[]
+  }>()
   const {
     render,
     init,
@@ -59,11 +62,7 @@ export default function IndexPage() {
     toggleDebugMode,
   } = useSpine()
   const { toast } = useToast()
-  const setBlob = async ({
-    atlasUrl,
-    imageUrl,
-    skelUrl,
-  }: SpineUrls) => {
+  const setBlob = async ({ atlasUrl, imageUrl, skelUrl }: SpineUrls) => {
     if (!atlasUrl || !imageUrl || !skelUrl) return
     const manifest = {
       bundles: [
@@ -91,7 +90,7 @@ export default function IndexPage() {
       const jsonToConvert = new SkelToJson(spineToConvert)
       const jsonString = jsonToConvert.toJSON()
       const encodedJsonString = encodeURIComponent(jsonString)
-      
+
       const loader = await Assets.load({
         src: `data:application/json;charset=utf-8,${encodedJsonString}`,
         data: {
@@ -109,27 +108,65 @@ export default function IndexPage() {
       })
     }
   }
-  const {refetch} = useQuery(["langrisser"], () => fetchFiles(charRef.current), 
-  {
-    enabled:!!charRef.current,
-    onSuccess:setBlob,
-  });
-
-  const handleComboBoxChange = useCallback((index: string) => {
-    const chars = Object.keys(db.char);
-    const selChar = chars[parseInt(index)];
-    const skins = Object.keys((db.char as DB["char"])[selChar]);
-    const filteredSkins = skins.filter(skin => (db.char as Record<string, CharEntry>)[selChar][skin].complete);
-  
-    if (filteredSkins[0] !== undefined) {
-      const { atlas, png, skel } = (db.char as Record<string, CharEntry>)[selChar][filteredSkins[0]].files;
-  
-      const currentChar = { atlas, png, skel };      
-      charRef.current = currentChar;
+  const { refetch } = useQuery(
+    ["langrisser"],
+    () => fetchFiles(charRef.current),
+    {
+      enabled: !!charRef.current,
+      onSuccess: setBlob,
     }
-  
-    refetch();
-  }, [refetch]);
+  )
+
+  const handleCharacterComboBoxChange = useCallback(
+    (index: string) => {
+      const chars = Object.keys(db.char)
+      const selectedChar = chars[parseInt(index)]
+      const skins = Object.keys((db.char as DB["char"])[selectedChar])
+      const filteredSkins = skins.filter(
+        (skin) =>
+          (db.char as Record<string, CharEntry>)[selectedChar][skin].complete
+      )
+
+      if (filteredSkins[0] !== undefined) {
+        const { atlas, png, skel } = (db.char as Record<string, CharEntry>)[
+          selectedChar
+        ][filteredSkins[0]].files
+
+        const currentChar = { atlas, png, skel }
+        charRef.current = currentChar
+        currentCharRef.current = {
+          selectedChar,
+          selectedSkin: filteredSkins[0],
+          availableSkins: filteredSkins,
+        }
+      }
+
+      refetch()
+    },
+    [refetch]
+  )
+  const handleSkinComboBoxChange = useCallback(
+    (index: string) => {
+      if (!currentCharRef.current) return
+      const charData = (db.char as Record<string, CharEntry>)[
+        currentCharRef.current.selectedChar
+      ][currentCharRef.current.availableSkins[parseInt(index)]].files
+
+      if (charData !== undefined) {
+        const { atlas, png, skel } = charData
+
+        const currentChar = { atlas, png, skel }
+        charRef.current = currentChar
+        currentCharRef.current = {
+          ...currentCharRef.current,
+          selectedSkin: currentCharRef.current.availableSkins[parseInt(index)],
+        }
+      }
+
+      refetch()
+    },
+    [refetch]
+  )
 
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-5">
@@ -140,29 +177,40 @@ export default function IndexPage() {
       </div>
       <div className="flex w-full flex-col items-center gap-2 md:px-6">
         <div className="flex w-full flex-col items-start gap-2">
-        <Label>Character list:</Label>
-        <ComboBox
-            disabledText="Load a Spine file"
-            searchText="Search by animation name"
-            selectText="Select an animation"
-            notFoundText="No animations found"
+          <Label>Character list:</Label>
+          <ComboBox
+            searchText="Search by character name"
+            selectText="Select a character"
+            notFoundText="No characters found"
             data={Object.keys(db.char).map((char, i) => ({
               value: i.toString(),
               label: char,
             }))}
-            onChange={handleComboBoxChange}
+            onChange={(data) => handleCharacterComboBoxChange(data.value)}
           />
-          <Label>Spine animation list:</Label>
-          <ComboBox          
+          <Label>Skin list:</Label>
+          <ComboBox
             disabledText="Load a Spine file"
             searchText="Search by animation name"
             selectText="Select an animation"
             notFoundText="No animations found"
+            data={currentCharRef.current?.availableSkins.map((skin, i) => ({
+              value: i.toString(),
+              label: skin,
+            }))}
+            onChange={(data) => handleSkinComboBoxChange(data.value)}
+          />
+          <Label>Spine animation list:</Label>
+          <ComboBox
+            disabledText="Load a character first"
+            searchText="Search by skin name"
+            selectText="Select a skin"
+            notFoundText="No skins found"
             data={animationList?.map((animation, i) => ({
               value: i.toString(),
               label: animation.name,
             }))}
-            onChange={(index) => playAnimation(parseInt(index))}
+            onChange={(index) => playAnimation(parseInt(index.value))}
           />
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-6">
             <Button
@@ -194,7 +242,6 @@ export default function IndexPage() {
             >
               Toggle Debug Mode
             </Button>
-
           </div>
         </div>
 

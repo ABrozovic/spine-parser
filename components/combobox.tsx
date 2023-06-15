@@ -18,7 +18,7 @@ import {
 
 type ComboBoxProps = {
   data: { value: string; label: string }[] | undefined
-  onChange: (value: string) => void
+  onChange: ({ value, label }: { value: string; label: string }) => void
   className?: string
   defaultToFirst?: boolean
   selectText?: string
@@ -50,7 +50,7 @@ export function ComboBox({
 
   const onSelect = (currentValue: string, id: string): void => {
     setValue(currentValue)
-    onChange(id)
+    onChange({ value: id, label: currentValue })
     setOpen(false)
   }
 
@@ -68,7 +68,9 @@ export function ComboBox({
           {!data
             ? disabledText
             : value
-            ? data.find((option) => option.label === value)?.label
+            ? data.find(
+                (option) => option.label.toLowerCase() === value.toLowerCase()
+              )?.label
             : selectText ?? "Select an option..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 " />
         </Button>
