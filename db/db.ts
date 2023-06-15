@@ -1,3 +1,26 @@
+export type SpineUrls = {
+  imageUrl?: string | null
+  skelUrl?: string | null
+  atlasUrl?: string | null
+}
+export type Files = {
+  atlas?: string | undefined
+  png?: string | undefined
+  skel?: string | undefined
+}
+
+export type Skin = {
+  complete: boolean
+  files: Files
+}
+
+export type CharEntry = {
+  [skin: string]: Skin
+}
+
+export type DB = {
+  char: Record<string, CharEntry>
+}
 export const db = {
   bg: {
     "0": {},

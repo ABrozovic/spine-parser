@@ -2,49 +2,18 @@
 
 import "pixi-spine"
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import { db } from "@/db/db"
+import { CharEntry, DB, SpineUrls, db } from "@/db/db"
 import { Spine } from "@/local_modules/pixi-spine"
-import { atlasSchema } from "@/schema/atlas-schema"
-import { imageSchema } from "@/schema/image-schema"
-import { jsonSchema } from "@/schema/json-schema"
 import { SkelToJson } from "@/utils/converter/skelToJson"
 import { fetchFiles } from "@/utils/fetcher"
-import { readFileAsDataURL } from "@/utils/read-data-url"
 import { useQuery } from "@tanstack/react-query"
 import { Assets } from "pixi.js"
-import * as prettier from "prettier"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { ComboBox } from "@/components/combobox"
+import { SpineControlButtons } from "@/components/spine-control-buttons"
 import useSpine from "@/components/use-spine"
-
-type SpineUrls = {
-  imageUrl?: string | null
-  skelUrl?: string | null
-  atlasUrl?: string | null
-}
-interface Files {
-  atlas?: string | undefined
-  png?: string | undefined
-  skel?: string | undefined
-}
-
-interface Skin {
-  complete: boolean
-  files: Files
-}
-
-interface CharEntry {
-  [skin: string]: Skin
-}
-
-interface DB {
-  char: Record<string, CharEntry>
-}
 
 export default function IndexPage() {
   const charRef = useRef<{ png?: string; atlas?: string; skel?: string }>()
@@ -53,14 +22,8 @@ export default function IndexPage() {
     selectedSkin: string
     availableSkins: string[]
   }>()
-  const {
-    render,
-    init,
-    animationList,
-    playAnimation,
-    spineAnimation,
-    toggleDebugMode,
-  } = useSpine()
+  const pixiData = useSpine()
+  const { render, init, animationList, playAnimation } = pixiData
   const { toast } = useToast()
   const setBlob = async ({ atlasUrl, imageUrl, skelUrl }: SpineUrls) => {
     if (!atlasUrl || !imageUrl || !skelUrl) return
@@ -87,6 +50,7 @@ export default function IndexPage() {
       await Assets.init({ manifest })
       const assetBundle = await Assets.loadBundle("spineAnimation")
       const spineToConvert = new Spine(assetBundle.spineAnimation.spineData)
+      console.log(JSON.stringify(spineToConvert.skeleton.data.bones))
       const jsonToConvert = new SkelToJson(spineToConvert)
       const jsonString = jsonToConvert.toJSON()
       const encodedJsonString = encodeURIComponent(jsonString)
@@ -101,7 +65,7 @@ export default function IndexPage() {
       const spine = new Spine(loader.spineData)
       init(spine)
     } catch (error) {
-      console.log("🚀 ~ file: page.tsx:109 ~ IndexPage ~ error:", error)
+      console.log(error)
       toast({
         title: "Error loading Spine data",
         description: "Make sure your Skel version is 3.3 or 3.4",
@@ -190,10 +154,10 @@ export default function IndexPage() {
           />
           <Label>Skin list:</Label>
           <ComboBox
-            disabledText="Load a Spine file"
-            searchText="Search by animation name"
-            selectText="Select an animation"
-            notFoundText="No animations found"
+            disabledText="Load a character first"
+            searchText="Search by skin name"
+            selectText="Select a skin"
+            notFoundText="No skins found"
             data={currentCharRef.current?.availableSkins.map((skin, i) => ({
               value: i.toString(),
               label: skin,
@@ -202,7 +166,7 @@ export default function IndexPage() {
           />
           <Label>Spine animation list:</Label>
           <ComboBox
-            disabledText="Load a character first"
+            disabledText="Load a skin first"
             searchText="Search by skin name"
             selectText="Select a skin"
             notFoundText="No skins found"
@@ -212,37 +176,7 @@ export default function IndexPage() {
             }))}
             onChange={(index) => playAnimation(parseInt(index.value))}
           />
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-6">
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                if (spineAnimation) spineAnimation.state.timeScale = 1
-              }}
-            >
-              Play
-            </Button>
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                if (spineAnimation) spineAnimation.state.timeScale = 0
-              }}
-              variant="secondary"
-            >
-              Pause
-            </Button>
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                toggleDebugMode()
-              }}
-              variant="outline"
-            >
-              Toggle Debug Mode
-            </Button>
-          </div>
+          <SpineControlButtons pixiData={pixiData}></SpineControlButtons>
         </div>
 
         {render}

@@ -8,5 +8,13 @@ export const siteConfig = {
       title: "Home",
       href: "/",
     },
+    {
+      title: "3.4 Converter",
+      href: "/converter",
+    },
+    {
+      title: "Langrisser Previewer",
+      href: "/langrisser",
+    },
   ],
 }

@@ -8,8 +8,17 @@ const roundUpToEven = (num: number, decimalPlaces: number): number => {
   const roundedNum = Math.ceil(num * factor)
   return roundedNum % 2 === 1 ? (roundedNum + 1) / factor : roundedNum / factor
 }
-
-const useSpine = () => {
+export type UseSpine = {
+  init: (spine: Spine) => void
+  animationList: IAnimation<ITimeline>[] | undefined
+  playAnimation: (index: number) => void
+  toggleDebugMode: () => void
+  spineAnimation: Spine | null | undefined
+  position: PIXI.ObservablePoint<any> | undefined
+  scale: PIXI.ObservablePoint<any> | undefined
+  render: React.JSX.Element
+}
+const useSpine = (): UseSpine => {
   const [canvasState, setCanvasState] = useState<HTMLCanvasElement | null>(null)
   const [animationList, setAnimationList] = useState<
     IAnimation<ITimeline>[] | undefined
