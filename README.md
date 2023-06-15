@@ -29,7 +29,7 @@ Spine Parser is a Next.js application that provides various features for working
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/your-username/spine-parser.git
+   git clone https://github.com/ABrozovic/spine-parser.git
    ```
 
 2. Navigate to the project directory:
