@@ -1,6 +1,9 @@
 import { Spine } from "@/local_modules/pixi-spine"
 import {
   AttachmentType,
+  IBone,
+  IBoneData,
+  TransformMode,
   type IAttachment,
   type IEventData,
   type IIkConstraintData,
@@ -51,12 +54,7 @@ type BoneAttributes = {
   name: string
   length?: number
   parent?: string
-  transform?:
-    | "normal"
-    | "onlyTranslation"
-    | "noRotationOrReflection"
-    | "noScale"
-    | "noScaleOrReflection"
+  transform?: TransformModeValue
   skin?: boolean
   x?: number
   y?: number
@@ -134,6 +132,10 @@ type EventAttributes = {
   volume?: number
   balance?: number
 }
+interface ExtendedBoneData extends IBoneData {
+  inheritRotation: boolean
+  inheritScale: boolean
+}
 
 interface ExtendedIkConstraintData extends IIkConstraintData {
   bones: BoneAttributes[]
@@ -172,6 +174,15 @@ interface ExtendedSkin extends ISkin {
 }
 interface ExtendedSkinEntry extends SkinEntry, IAttachment {}
 
+const transformModeStrings = {
+  0: "normal",
+  1: "onlyTranslation",
+  2: "noRotationOrReflection",
+  3: "noScale",
+  4: "noScaleOrReflection",
+} as const
+type TransformModeStrings = typeof transformModeStrings
+type TransformModeValue = TransformModeStrings[keyof TransformModeStrings]
 export class SkelToJson {
   animData = new AnimationData()
   skeleton: SkeletonAttributes
@@ -210,6 +221,16 @@ export class SkelToJson {
       })
     )
   }
+  private getTransform(
+    inheritRotation: boolean,
+    inheritScale: boolean
+  ): TransformModeValue {
+    let transform: keyof typeof transformModeStrings = 0
+    if (!inheritRotation && inheritScale) transform = 2
+    if (inheritRotation && !inheritScale) transform = 3
+    if (!inheritRotation && !inheritScale) transform = 1
+    return transformModeStrings[transform]
+  }
   private rgba8888ToColor(rgba: {
     r: number
     g: number
@@ -245,21 +266,25 @@ export class SkelToJson {
 
   private createBoneAttributes(): BoneAttributes[] {
     const bones = this.spine.skeleton.bones
-    return bones.map(({ data: bone }) => ({
-      name: bone.name,
-      length: bone.length,
-      // transform: bone.transformMode,
-      parent: bone.parent ? bone.parent.name : undefined,
-      skin: false,
-      x: bone.x,
-      y: bone.y,
-      rotation: bone.rotation,
-      scaleX: bone.scaleX,
-      scaleY: bone.scaleY,
-      shearX: bone.shearX,
-      shearY: bone.scaleY,
-      //color: bone.
-    }))
+    return bones.map(({ data: boneData }) => {
+      const bone = boneData as ExtendedBoneData
+      return {
+        name: bone.name,
+        length: bone.length,
+        // transform: bone.transformMode,
+        parent: bone.parent ? bone.parent.name : undefined,
+        skin: false,
+        x: bone.x,
+        y: bone.y,
+        rotation: bone.rotation,
+        scaleX: bone.scaleX,
+        scaleY: bone.scaleY,
+        shearX: bone.shearX,
+        shearY: bone.scaleY,
+        transform: this.getTransform(bone.inheritRotation, bone.inheritScale),
+        //color: bone.
+      }
+    })
   }
 
   private createSlotAttributes(): SlotAttributes[] {
