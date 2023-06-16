@@ -1,5 +1,16 @@
 import { SpineLoaderAbstract } from '@pixi-spine/loader-base';
 import { BinaryInput } from '@pixi-spine/base';
+import './runtime-3.4/lib/core/attachments/Attachment.mjs';
+import './runtime-3.4/lib/core/attachments/RegionAttachment.mjs';
+import './runtime-3.4/lib/core/vertexeffects/SwirlEffect.mjs';
+import './runtime-3.4/lib/core/Animation.mjs';
+import './runtime-3.4/lib/core/AnimationState.mjs';
+import './runtime-3.4/lib/core/AnimationStateData.mjs';
+import { AtlasAttachmentLoader } from './runtime-3.4/lib/core/AtlasAttachmentLoader.mjs';
+import '@pixi/core';
+import './runtime-3.4/lib/core/PathConstraint.mjs';
+import './runtime-3.4/lib/core/Skeleton.mjs';
+import { SkeletonBinary } from './runtime-3.4/lib/core/SkeletonBinary.mjs';
 import * as spine38 from '@pixi-spine/runtime-3.8';
 import * as spine37 from '@pixi-spine/runtime-3.7';
 import * as spine41 from '@pixi-spine/runtime-4.1';
@@ -13,6 +24,9 @@ class UniBinaryParser {
     let parser = null;
     let version = this.readVersionOldFormat(dataToParse);
     let ver = detectSpineVersion(version);
+    if (ver === SPINE_VERSION.VER34) {
+      parser = new SkeletonBinary(new AtlasAttachmentLoader(atlas));
+    }
     if (ver === SPINE_VERSION.VER38) {
       parser = new spine38.SkeletonBinary(new spine38.AtlasAttachmentLoader(atlas));
     }

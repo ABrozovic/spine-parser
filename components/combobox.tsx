@@ -16,9 +16,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+import { ScrollArea } from "./ui/scroll-area"
+
 type ComboBoxProps = {
   data: { value: string; label: string }[] | undefined
-  onChange: (value: string) => void
+  onChange: ({ value, label }: { value: string; label: string }) => void
   className?: string
   defaultToFirst?: boolean
   selectText?: string
@@ -50,7 +52,7 @@ export function ComboBox({
 
   const onSelect = (currentValue: string, id: string): void => {
     setValue(currentValue)
-    onChange(id)
+    onChange({ value: id, label: currentValue })
     setOpen(false)
   }
 
@@ -68,7 +70,9 @@ export function ComboBox({
           {!data
             ? disabledText
             : value
-            ? data.find((option) => option.label === value)?.label
+            ? data.find(
+                (option) => option.label.toLowerCase() === value.toLowerCase()
+              )?.label
             : selectText ?? "Select an option..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 " />
         </Button>
@@ -78,21 +82,23 @@ export function ComboBox({
           <CommandInput placeholder={searchText ?? "Search an option..."} />
           <CommandEmpty>{notFoundText ?? "No option found."}</CommandEmpty>
           <CommandGroup>
-            {data?.map((option) => (
-              <CommandItem
-                className="capitalize"
-                key={option.value}
-                onSelect={(label) => onSelect(label, option.value)}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === option.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {option.label}
-              </CommandItem>
-            ))}
+            <ScrollArea className="h-72 rounded-md border">
+              {data?.map((option) => (
+                <CommandItem
+                  className="capitalize"
+                  key={option.value}
+                  onSelect={(label) => onSelect(label, option.value)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </ScrollArea>
           </CommandGroup>
         </Command>
       </PopoverContent>

@@ -2,6 +2,17 @@
 
 var loaderBase = require('@pixi-spine/loader-base');
 var base = require('@pixi-spine/base');
+require('./runtime-3.4/lib/core/attachments/Attachment.js');
+require('./runtime-3.4/lib/core/attachments/RegionAttachment.js');
+require('./runtime-3.4/lib/core/vertexeffects/SwirlEffect.js');
+require('./runtime-3.4/lib/core/Animation.js');
+require('./runtime-3.4/lib/core/AnimationState.js');
+require('./runtime-3.4/lib/core/AnimationStateData.js');
+var AtlasAttachmentLoader = require('./runtime-3.4/lib/core/AtlasAttachmentLoader.js');
+require('@pixi/core');
+require('./runtime-3.4/lib/core/PathConstraint.js');
+require('./runtime-3.4/lib/core/Skeleton.js');
+var SkeletonBinary = require('./runtime-3.4/lib/core/SkeletonBinary.js');
 var spine38 = require('@pixi-spine/runtime-3.8');
 var spine37 = require('@pixi-spine/runtime-3.7');
 var spine41 = require('@pixi-spine/runtime-4.1');
@@ -36,6 +47,9 @@ class UniBinaryParser {
     let parser = null;
     let version = this.readVersionOldFormat(dataToParse);
     let ver = versions.detectSpineVersion(version);
+    if (ver === versions.SPINE_VERSION.VER34) {
+      parser = new SkeletonBinary.SkeletonBinary(new AtlasAttachmentLoader.AtlasAttachmentLoader(atlas));
+    }
     if (ver === versions.SPINE_VERSION.VER38) {
       parser = new spine38__namespace.SkeletonBinary(new spine38__namespace.AtlasAttachmentLoader(atlas));
     }

@@ -1,4 +1,5 @@
 import { SpineBase } from '@pixi-spine/base';
+import * as index from './runtime-3.4/lib/index.mjs';
 import * as spine38 from '@pixi-spine/runtime-3.8';
 import * as spine37 from '@pixi-spine/runtime-3.7';
 import * as spine41 from '@pixi-spine/runtime-4.1';
@@ -8,6 +9,9 @@ class Spine extends SpineBase {
   createSkeleton(spineData) {
     const ver = detectSpineVersion(spineData.version);
     let spine = null;
+    if (ver === SPINE_VERSION.VER34) {
+      spine = index;
+    }
     if (ver === SPINE_VERSION.VER37) {
       spine = spine37;
     }

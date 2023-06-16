@@ -70,10 +70,10 @@ const spineTextureAtlasLoader = {
     }
   }
 };
-const makeSpineTextureAtlasLoaderFunctionFromPixiLoaderObject = (loader, atlasBasePath, imageMetadata, imageURI) => {
+const makeSpineTextureAtlasLoaderFunctionFromPixiLoaderObject = (loader, atlasBasePath, imageMetadata, imageURL) => {
   return async (pageName, textureLoadedCallback) => {
-    const url = core.utils.path.join(...atlasBasePath.split(core.utils.path.sep), pageName);
-    const texture = await loader.load(imageURI ? imageURI : { src: url, data: imageMetadata });
+    const url = core.utils.path.normalize([...atlasBasePath.split(core.utils.path.sep), pageName].join(core.utils.path.sep));
+    const texture = await loader.load(imageURL ? imageURL : { src: url, data: imageMetadata });
     textureLoadedCallback(texture.baseTexture);
   };
 };

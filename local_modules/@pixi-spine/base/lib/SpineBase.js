@@ -10,6 +10,7 @@ var meshExtras = require('@pixi/mesh-extras');
 var graphics = require('@pixi/graphics');
 var settings = require('./settings.js');
 
+const tempRgb = [0, 0, 0];
 class SpineSprite extends sprite.Sprite {
   constructor() {
     super(...arguments);
@@ -200,11 +201,10 @@ const _SpineBase = class extends display.Container {
           if (slot.currentSprite.color) {
             spriteColor = slot.currentSprite.color;
           } else {
-            slot.currentSprite.tint = core.utils.rgb2hex([
-              light[0] * slot.color.r * attColor.r,
-              light[1] * slot.color.g * attColor.g,
-              light[2] * slot.color.b * attColor.b
-            ]);
+            tempRgb[0] = light[0] * slot.color.r * attColor.r;
+            tempRgb[1] = light[1] * slot.color.g * attColor.g;
+            tempRgb[2] = light[2] * slot.color.b * attColor.b;
+            slot.currentSprite.tint = core.utils.rgb2hex(tempRgb);
           }
           slot.currentSprite.blendMode = slot.blendMode;
           break;
@@ -246,11 +246,10 @@ const _SpineBase = class extends display.Container {
           if (slot.currentMesh.color) {
             spriteColor = slot.currentMesh.color;
           } else {
-            slot.currentMesh.tint = core.utils.rgb2hex([
-              light[0] * slot.color.r * attColor.r,
-              light[1] * slot.color.g * attColor.g,
-              light[2] * slot.color.b * attColor.b
-            ]);
+            tempRgb[0] = light[0] * slot.color.r * attColor.r;
+            tempRgb[1] = light[1] * slot.color.g * attColor.g;
+            tempRgb[2] = light[2] * slot.color.b * attColor.b;
+            slot.currentMesh.tint = core.utils.rgb2hex(tempRgb);
           }
           slot.currentMesh.blendMode = slot.blendMode;
           if (!slot.hackRegion) {

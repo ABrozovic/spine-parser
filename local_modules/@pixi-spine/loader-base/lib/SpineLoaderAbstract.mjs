@@ -5,11 +5,8 @@ import { makeSpineTextureAtlasLoaderFunctionFromPixiLoaderObject } from './atlas
 
 const validJSONExtension = ".json";
 const validJSONMIME = "application/json";
-const validAtlasSMIME = "application/octet-stream";
-const validImageMIMEs = [
-  "image/jpeg",
-  "image/png"
-];
+const validAtlasMIMEs = ["application/octet-stream", "text/plain"];
+const validImageMIMEs = ["image/jpeg", "image/png"];
 function isJson(resource) {
   return resource.hasOwnProperty("bones");
 }
@@ -33,8 +30,8 @@ class SpineLoaderAbstract {
           return checkExtension(url, ".skel");
         },
         async load(url) {
-          const response = await settings.ADAPTER.fetch(url);
-          const buffer = await response.arrayBuffer();
+          const isSpineSkelFileURL = checkDataUrl(url, validAtlasMIMEs);
+          const buffer = isSpineSkelFileURL ? dataURLToArrayBuffer(url.slice(0, url.lastIndexOf("."))) : await (await settings.ADAPTER.fetch(url)).arrayBuffer();
           return buffer;
         },
         // #endregion
@@ -71,9 +68,9 @@ class SpineLoaderAbstract {
             return spineAdapter.parseData(parser, metadataAtlas, dataToParse);
           }
           let textAtlas = metadata.atlasRawData;
-          const isSpineAtlasFileURI = checkDataUrl(metadata.spineAtlasFile, validAtlasSMIME);
-          if (isSpineAtlasFileURI) {
-            textAtlas = Buffer.from(metadata.spineAtlasFile.split(",")[1], "base64").toString("binary");
+          const isSpineAtlasFileURL = checkDataUrl(metadata.spineAtlasFile, validAtlasMIMEs);
+          if (isSpineAtlasFileURL) {
+            textAtlas = atob(metadata.spineAtlasFile.split(",")[1]);
           }
           if (textAtlas) {
             let auxResolve = null;
@@ -82,13 +79,17 @@ class SpineLoaderAbstract {
               auxResolve = resolve;
               auxReject = reject;
             });
-            const imageURI = typeof metadata.image === "string" && checkDataUrl(metadata.image, validImageMIMEs) ? metadata.image : null;
-            const atlas = new TextureAtlas(textAtlas, makeSpineTextureAtlasLoaderFunctionFromPixiLoaderObject(loader, basePath, metadata.imageMetadata, imageURI), (newAtlas) => {
-              if (!newAtlas) {
-                auxReject("Something went terribly wrong loading a spine .atlas file\nMost likely your texture failed to load.");
+            const imageURL = typeof metadata.image === "string" && checkDataUrl(metadata.image, validImageMIMEs) ? metadata.image : null;
+            const atlas = new TextureAtlas(
+              textAtlas,
+              makeSpineTextureAtlasLoaderFunctionFromPixiLoaderObject(loader, basePath, metadata.imageMetadata, imageURL),
+              (newAtlas) => {
+                if (!newAtlas) {
+                  auxReject("Something went terribly wrong loading a spine .atlas file\nMost likely your texture failed to load.");
+                }
+                auxResolve(atlas);
               }
-              auxResolve(atlas);
-            });
+            );
             const textureAtlas2 = await atlasPromise;
             return spineAdapter.parseData(parser, textureAtlas2, dataToParse);
           }
@@ -108,6 +109,17 @@ class SpineLoaderAbstract {
     extensions.add(spineLoaderExtension);
     return spineLoaderExtension;
   }
+}
+function dataURLToArrayBuffer(dataURL) {
+  const base64 = dataURL.split(",")[1];
+  const binaryString = atob(base64);
+  const length = binaryString.length;
+  const arrayBuffer = new ArrayBuffer(length);
+  const uint8Array = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < length; i++) {
+    uint8Array[i] = binaryString.charCodeAt(i);
+  }
+  return arrayBuffer;
 }
 
 export { SpineLoaderAbstract };

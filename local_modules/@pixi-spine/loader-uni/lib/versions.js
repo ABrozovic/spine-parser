@@ -2,6 +2,7 @@
 
 var SPINE_VERSION = /* @__PURE__ */ ((SPINE_VERSION2) => {
   SPINE_VERSION2[SPINE_VERSION2["UNKNOWN"] = 0] = "UNKNOWN";
+  SPINE_VERSION2[SPINE_VERSION2["VER34"] = 34] = "VER34";
   SPINE_VERSION2[SPINE_VERSION2["VER37"] = 37] = "VER37";
   SPINE_VERSION2[SPINE_VERSION2["VER38"] = 38] = "VER38";
   SPINE_VERSION2[SPINE_VERSION2["VER40"] = 40] = "VER40";
@@ -11,6 +12,12 @@ var SPINE_VERSION = /* @__PURE__ */ ((SPINE_VERSION2) => {
 function detectSpineVersion(version) {
   const ver3 = version.substr(0, 3);
   const verNum = Math.floor(Number(ver3) * 10 + 1e-3);
+  if (ver3 === "3.3") {
+    return 34 /* VER34 */;
+  }
+  if (ver3 === "3.4") {
+    return 34 /* VER34 */;
+  }
   if (ver3 === "3.7") {
     return 37 /* VER37 */;
   }

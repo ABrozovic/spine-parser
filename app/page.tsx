@@ -2,20 +2,18 @@
 
 import "pixi-spine"
 import React, { useRef } from "react"
-import Link from "next/link"
-import { Spine, SpineDebugRenderer } from "@/local_modules/pixi-spine"
+import { Spine } from "@/local_modules/pixi-spine"
 import { atlasSchema } from "@/schema/atlas-schema"
 import { imageSchema } from "@/schema/image-schema"
-import { jsonSchema } from "@/schema/json-schema"
 import { readFileAsDataURL } from "@/utils/read-data-url"
 import { Assets } from "pixi.js"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn, getFileExtension } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { ComboBox } from "@/components/combobox"
 import Dropzone from "@/components/dropzone"
+import { SpineControlButtons } from "@/components/spine-control-buttons"
 import useSpine from "@/components/use-spine"
 
 type SpineUrls = {
@@ -26,14 +24,8 @@ type SpineUrls = {
 
 export default function IndexPage() {
   const spineUrlRef = useRef<SpineUrls>()
-  const {
-    render,
-    init,
-    animationList,
-    playAnimation,
-    spineAnimation,
-    toggleDebugMode,
-  } = useSpine()
+  const pixiData = useSpine()
+  const { render, init, animationList, playAnimation } = pixiData
   const { toast } = useToast()
   const setBlob = async ({
     atlasUrl = spineUrlRef.current?.atlasUrl,
@@ -80,7 +72,9 @@ export default function IndexPage() {
   ) => {
     let file = files[0]?.file
     if (file) {
-      const dataUrl = await readFileAsDataURL(file)
+      let dataUrl = await readFileAsDataURL(file)
+      dataUrl =
+        getFileExtension(file.name) === "skel" ? dataUrl + ".skel" : dataUrl
       setBlob({ [propertyName]: dataUrl })
     } else {
       setBlob({ [propertyName]: null })
@@ -179,8 +173,6 @@ export default function IndexPage() {
           <Dropzone
             className="flex flex-1 flex-col sm:max-w-[30%]"
             onFilesChanged={(files) => handleFilesChanged(files, "jsonUrl")}
-            acceptedMimeTypes={["application/json"]}
-            validator={(files) => jsonSchema.parse(files)}
             acceptAll
             multiple={false}
             maxFiles={1}
@@ -200,7 +192,7 @@ export default function IndexPage() {
                 <p className="overflow-hidden text-ellipsis whitespace-pre-line">{`${
                   maxFilesReached
                     ? `${files[0] && `${files[0]?.file.name}`}`
-                    : `Drop a .json file`
+                    : `Drop a .json/skel file`
                 }`}</p>
                 {maxFilesReached && (
                   <button
@@ -231,40 +223,10 @@ export default function IndexPage() {
               value: i.toString(),
               label: animation.name,
             }))}
-            onChange={(index) => playAnimation(parseInt(index))}
+            onChange={(index) => playAnimation(parseInt(index.value))}
           />
-          <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-6">
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                if (spineAnimation) spineAnimation.state.timeScale = 1
-              }}
-            >
-              Play
-            </Button>
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                if (spineAnimation) spineAnimation.state.timeScale = 0
-              }}
-              variant="secondary"
-            >
-              Pause
-            </Button>
-            <Button
-              disabled={!animationList}
-              className="w-full"
-              onClick={() => {
-                toggleDebugMode()
-              }}
-              variant="outline"
-            >
-              Toggle Debug Mode
-            </Button>
-          </div>
         </div>
+        <SpineControlButtons pixiData={pixiData} />
 
         {render}
       </div>
