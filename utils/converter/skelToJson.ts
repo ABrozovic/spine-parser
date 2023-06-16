@@ -3,6 +3,7 @@ import {
   AttachmentType,
   IBone,
   IBoneData,
+  ITimeline,
   TransformMode,
   type IAttachment,
   type IEventData,
@@ -402,7 +403,9 @@ export class SkelToJson {
     this.spine.skeleton.data.animations.forEach((animation) => {
       this.animData.addAnimation(animation.name)
       animation.timelines.forEach((timeline) => {
-        const timelineConstructorName = timeline.constructor.name
+        const timelineConstructorName = (
+          timeline as ITimeline & { type: string }
+        ).type
         if (
           ["_ColorTimeline", "ColorTimeline"].includes(timelineConstructorName)
         ) {

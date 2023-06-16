@@ -52,14 +52,6 @@ const _SkeletonBinary = class {
       data.length = input.readFloat() * scale;
       data.inheritRotation = input.readBoolean();
       data.inheritScale = input.readBoolean();
-      let transform = 0;
-      if (!data.inheritRotation && data.inheritScale)
-        transform = 2;
-      if (data.inheritRotation && !data.inheritScale)
-        transform = 3;
-      if (!data.inheritRotation && !data.inheritScale)
-        transform = 1;
-      data.transformMode = transform;
       if (nonessential)
         base.Color.rgba8888ToColor(data.color, input.readInt32());
       skeletonData.bones.push(data);

@@ -181,6 +181,7 @@ const _RotateTimeline = class extends CurveTimeline {
   // time, degrees, ...
   constructor(frameCount) {
     super(frameCount);
+    this.type = "RotateTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount << 1);
   }
@@ -252,6 +253,7 @@ const _TranslateTimeline = class extends CurveTimeline {
   // time, x, y, ...
   constructor(frameCount) {
     super(frameCount);
+    this.type = "TranslateTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _TranslateTimeline.ENTRIES);
   }
@@ -323,6 +325,7 @@ TranslateTimeline.Y = 2;
 class ScaleTimeline extends TranslateTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "ScaleTimeline";
   }
   getPropertyId() {
     return (2 /* scale */ << 24) + this.boneIndex;
@@ -418,6 +421,7 @@ class ScaleTimeline extends TranslateTimeline {
 class ShearTimeline extends TranslateTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "ShearTimeline";
   }
   getPropertyId() {
     return (3 /* shear */ << 24) + this.boneIndex;
@@ -472,6 +476,7 @@ class ShearTimeline extends TranslateTimeline {
 const _ColorTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "ColorTimeline";
     // time, r, g, b, a, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _ColorTimeline.ENTRIES);
@@ -553,6 +558,7 @@ ColorTimeline.A = 4;
 const _TwoColorTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "TwoColorTimeline";
     // time, r, g, b, a, r2, g2, b2, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _TwoColorTimeline.ENTRIES);
@@ -663,6 +669,7 @@ TwoColorTimeline.G2 = 6;
 TwoColorTimeline.B2 = 7;
 class AttachmentTimeline {
   constructor(frameCount) {
+    this.type = "AttachmentTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount);
     this.attachmentNames = new Array(frameCount);
@@ -711,6 +718,7 @@ let zeros = null;
 class DeformTimeline extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "DeformTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount);
     this.frameVertices = new Array(frameCount);
@@ -890,6 +898,7 @@ class DeformTimeline extends CurveTimeline {
 }
 class EventTimeline {
   constructor(frameCount) {
+    this.type = "EventTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount);
     this.events = new Array(frameCount);
@@ -938,6 +947,7 @@ class EventTimeline {
 }
 class DrawOrderTimeline {
   constructor(frameCount) {
+    this.type = "DrawOrderTimeline";
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount);
     this.drawOrders = new Array(frameCount);
@@ -987,6 +997,7 @@ class DrawOrderTimeline {
 const _IkConstraintTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "IkConstraintTimeline";
     // time, mix, softness, bendDirection, compress, stretch, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _IkConstraintTimeline.ENTRIES);
@@ -1073,6 +1084,7 @@ IkConstraintTimeline.STRETCH = 5;
 const _TransformConstraintTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "TransformConstraintTimeline";
     // time, rotate mix, translate mix, scale mix, shear mix, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _TransformConstraintTimeline.ENTRIES);
@@ -1166,6 +1178,7 @@ TransformConstraintTimeline.SHEAR = 4;
 const _PathConstraintPositionTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "PathConstraintPositionTimeline";
     // time, position, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _PathConstraintPositionTimeline.ENTRIES);
@@ -1222,6 +1235,7 @@ PathConstraintPositionTimeline.VALUE = 1;
 class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "PathConstraintSpacingTimeline";
   }
   getPropertyId() {
     return (12 /* pathConstraintSpacing */ << 24) + this.pathConstraintIndex;
@@ -1263,6 +1277,7 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 const _PathConstraintMixTimeline = class extends CurveTimeline {
   constructor(frameCount) {
     super(frameCount);
+    this.type = "PathConstraintMixTimeline";
     // time, rotate mix, translate mix, ...
     this.data = [];
     this.frames = base.Utils.newFloatArray(frameCount * _PathConstraintMixTimeline.ENTRIES);

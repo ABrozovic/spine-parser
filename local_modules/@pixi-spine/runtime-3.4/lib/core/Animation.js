@@ -189,7 +189,7 @@ const _RotateTimeline = class extends CurveTimeline {
   }
   /** Sets the time and angle of the specified keyframe. */
   setFrame(frameIndex, time, degrees) {
-    this.data.push({ frameIndex, time, degrees });
+    this.data.push({ type: "RotateTimeline", frameIndex, time, degrees });
     frameIndex <<= 1;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _RotateTimeline.ROTATION] = degrees;
@@ -260,7 +260,7 @@ const _TranslateTimeline = class extends CurveTimeline {
   }
   /** Sets the time in seconds, x, and y values for the specified key frame. */
   setFrame(frameIndex, time, x, y) {
-    this.data.push({ frameIndex, time, x, y });
+    this.data.push({ type: "TranslateTimeline", frameIndex, time, x, y });
     frameIndex *= _TranslateTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _TranslateTimeline.X] = x;
@@ -481,7 +481,7 @@ const _ColorTimeline = class extends CurveTimeline {
   }
   /** Sets the time in seconds, red, green, blue, and alpha for the specified key frame. */
   setFrame(frameIndex, time, r, g, b, a) {
-    this.data.push({ frameIndex, time, r, g, b, a });
+    this.data.push({ type: "ColorTimeline", frameIndex, time, r, g, b, a });
     frameIndex *= _ColorTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _ColorTimeline.R] = r;
@@ -562,7 +562,7 @@ const _TwoColorTimeline = class extends CurveTimeline {
   }
   /** Sets the time in seconds, light, and dark colors for the specified key frame. */
   setFrame(frameIndex, time, r, g, b, a, r2, g2, b2) {
-    this.data.push({ frameIndex, time, r, g, b, a, r2, g2, b2 });
+    this.data.push({ type: "TwoColorTimeline", frameIndex, time, r, g, b, a, r2, g2, b2 });
     frameIndex *= _TwoColorTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _TwoColorTimeline.R] = r;
@@ -676,7 +676,7 @@ class AttachmentTimeline {
   }
   /** Sets the time in seconds and the attachment name for the specified key frame. */
   setFrame(frameIndex, time, attachmentName) {
-    this.data.push({ frameIndex, time, attachmentName });
+    this.data.push({ type: "AttachmentTimeline", frameIndex, time, attachmentName });
     this.frames[frameIndex] = time;
     this.attachmentNames[frameIndex] = attachmentName;
   }
@@ -723,7 +723,7 @@ class DeformTimeline extends CurveTimeline {
   /** Sets the time in seconds and the vertices for the specified key frame.
    * @param vertices Vertex positions for an unweighted VertexAttachment, or deform offsets if it has weights. */
   setFrame(frameIndex, time, vertices, skin) {
-    this.data.push({ frameIndex, time, vertices, skin });
+    this.data.push({ type: "DeformTimeline", frameIndex, time, vertices, skin });
     this.frames[frameIndex] = time;
     this.frameVertices[frameIndex] = vertices;
   }
@@ -903,7 +903,7 @@ class EventTimeline {
   }
   /** Sets the time in seconds and the event for the specified key frame. */
   setFrame(frameIndex, event) {
-    this.data.push({ frameIndex, event });
+    this.data.push({ type: "EventTimeline", frameIndex, event });
     this.frames[frameIndex] = event.time;
     this.events[frameIndex] = event;
   }
@@ -953,7 +953,7 @@ class DrawOrderTimeline {
    * @param drawOrder For each slot in {@link Skeleton#slots}, the index of the new draw order. May be null to use setup pose
    *           draw order. */
   setFrame(frameIndex, time, drawOrder) {
-    this.data.push({ frameIndex, time, drawOrder });
+    this.data.push({ type: "DrawOrderTimeline", frameIndex, time, drawOrder });
     this.frames[frameIndex] = time;
     this.drawOrders[frameIndex] = drawOrder;
   }
@@ -996,7 +996,7 @@ const _IkConstraintTimeline = class extends CurveTimeline {
   }
   /** Sets the time, mix and bend direction of the specified keyframe. */
   setFrame(frameIndex, time, mix, bendDirection) {
-    this.data.push({ frameIndex, time, mix, bendDirection });
+    this.data.push({ type: "IkConstraintTimeline", frameIndex, time, mix, bendDirection });
     frameIndex *= _IkConstraintTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _IkConstraintTimeline.MIX] = mix;
@@ -1082,7 +1082,7 @@ const _TransformConstraintTimeline = class extends CurveTimeline {
   }
   /** The time in seconds, rotate mix, translate mix, scale mix, and shear mix for the specified key frame. */
   setFrame(frameIndex, time, rotateMix, translateMix, scaleMix, shearMix) {
-    this.data.push({ frameIndex, time, rotateMix, translateMix, scaleMix, shearMix });
+    this.data.push({ type: "TransformConstraintTimeline", frameIndex, time, rotateMix, translateMix, scaleMix, shearMix });
     frameIndex *= _TransformConstraintTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _TransformConstraintTimeline.ROTATE] = rotateMix;
@@ -1175,7 +1175,7 @@ const _PathConstraintPositionTimeline = class extends CurveTimeline {
   }
   /** Sets the time in seconds and path constraint position for the specified key frame. */
   setFrame(frameIndex, time, value) {
-    this.data.push({ frameIndex, time, value });
+    this.data.push({ type: "PathConstraintPositionTimeline", frameIndex, time, value });
     frameIndex *= _PathConstraintPositionTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _PathConstraintPositionTimeline.VALUE] = value;
@@ -1272,7 +1272,7 @@ const _PathConstraintMixTimeline = class extends CurveTimeline {
   }
   /** The time in seconds, rotate mix, and translate mix for the specified key frame. */
   setFrame(frameIndex, time, rotateMix, translateMix) {
-    this.data.push({ frameIndex, time, rotateMix, translateMix });
+    this.data.push({ type: "PathConstraintMixTimeline", frameIndex, time, rotateMix, translateMix });
     frameIndex *= _PathConstraintMixTimeline.ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + _PathConstraintMixTimeline.ROTATE] = rotateMix;

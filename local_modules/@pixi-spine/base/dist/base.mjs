@@ -1,6 +1,6 @@
 /*!
  * @pixi-spine/base - v4.0.3
- * Compiled Tue, 13 Jun 2023 12:45:06 UTC
+ * Compiled Tue, 13 Jun 2023 00:06:31 UTC
  *
  * @pixi-spine/base is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license

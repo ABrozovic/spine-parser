@@ -1,6 +1,6 @@
 /*!
  * @pixi-spine/runtime-4.1 - v4.0.3
- * Compiled Fri, 12 May 2023 00:15:30 UTC
+ * Compiled Tue, 13 Jun 2023 00:06:46 UTC
  *
  * @pixi-spine/runtime-4.1 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license

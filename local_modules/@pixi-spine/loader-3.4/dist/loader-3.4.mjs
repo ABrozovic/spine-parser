@@ -1,6 +1,6 @@
 /*!
  * @pixi-spine/loader-3.4 - v4.0.3
- * Compiled Thu, 15 Jun 2023 17:47:44 UTC
+ * Compiled Fri, 16 Jun 2023 01:12:32 UTC
  *
  * @pixi-spine/loader-3.4 is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license

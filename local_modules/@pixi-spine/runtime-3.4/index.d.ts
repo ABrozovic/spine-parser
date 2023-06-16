@@ -341,6 +341,7 @@ export declare class AttachmentTimeline implements Timeline {
     /** The attachment name for each key frame. May contain null values to clear the attachment. */
     attachmentNames: Array<string>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         attachmentName: string;
@@ -473,6 +474,7 @@ export declare class ColorTimeline extends CurveTimeline {
     /** The time in seconds, red, green, blue, and alpha values for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         r: number;
@@ -548,6 +550,7 @@ export declare class DeformTimeline extends CurveTimeline {
     /** The vertices for each key frame. */
     frameVertices: Array<ArrayLike_2<number>>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         vertices: ArrayLike_2<number>;
@@ -571,6 +574,7 @@ export declare class DrawOrderTimeline implements Timeline {
     /** The draw order for each key frame. See {@link #setFrame(int, float, int[])}. */
     drawOrders: Array<Array<number>>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         drawOrder: Array<number>;
@@ -645,6 +649,7 @@ export declare class EventTimeline implements Timeline {
     /** The event for each key frame. */
     events: Array<Event_2>;
     data: {
+        type: string;
         frameIndex: number;
         event: Event_2;
     }[];
@@ -734,6 +739,7 @@ export declare class IkConstraintTimeline extends CurveTimeline {
     /** The time in seconds, mix, softness, bend direction, compress, and stretch for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         mix: number;
@@ -861,6 +867,7 @@ export declare class PathConstraintMixTimeline extends CurveTimeline {
     /** The time in seconds, rotate mix, and translate mix for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         rotateMix: number;
@@ -887,6 +894,7 @@ export declare class PathConstraintPositionTimeline extends CurveTimeline {
     /** The time in seconds and path constraint position for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         value: number;
@@ -999,6 +1007,7 @@ export declare class RotateTimeline extends CurveTimeline {
     static PREV_ROTATION: number;
     static ROTATION: number;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         degrees: number;
@@ -1602,6 +1611,7 @@ export declare class TransformConstraintTimeline extends CurveTimeline {
     /** The time in seconds, rotate mix, translate mix, scale mix, and shear mix for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         rotateMix: number;
@@ -1628,6 +1638,7 @@ export declare class TranslateTimeline extends CurveTimeline {
     static X: number;
     static Y: number;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         x: number;
@@ -1671,6 +1682,7 @@ export declare class TwoColorTimeline extends CurveTimeline {
     /** The time in seconds, red, green, blue, and alpha values of the color, red, green, blue of the dark color, for each key frame. */
     frames: ArrayLike_2<number>;
     data: {
+        type: string;
         frameIndex: number;
         time: number;
         r: number;

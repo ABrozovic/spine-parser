@@ -49,8 +49,7 @@ export default function IndexPage() {
     try {
       await Assets.init({ manifest })
       const assetBundle = await Assets.loadBundle("spineAnimation")
-      const spineToConvert = new Spine(assetBundle.spineAnimation.spineData)
-      console.log(JSON.stringify(spineToConvert.skeleton.data.bones))
+      const spineToConvert = new Spine(assetBundle.spineAnimation.spineData)      
       const jsonToConvert = new SkelToJson(spineToConvert)
       const jsonString = jsonToConvert.toJSON()
       const encodedJsonString = encodeURIComponent(jsonString)
