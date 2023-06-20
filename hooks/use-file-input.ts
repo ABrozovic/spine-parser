@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { z } from "zod"
 
 export type FileWithId = {
@@ -10,7 +10,7 @@ type FileInputProps = {
   onFilesChanged: (files: FileWithId[]) => void
   onError: (err: string) => void
   defaultFiles?: FileWithId[]
-  validator?: <T extends FileWithId[]>(file: T) => FileWithId[]
+  validator?: <T extends FileWithId[]>(file: T) => void
 }
 
 const useFileInput = ({
@@ -25,41 +25,52 @@ const useFileInput = ({
     setFiles(defaultFiles)
   }
 
-  const handleDrop = (acceptedFiles: File[]) => {
+  const handleValidationError = (err: unknown) => {
+    let errorMessage: string;
+    if (err instanceof z.ZodError) {
+      errorMessage = err.issues.map((issue) => issue.message).join("\n");
+    } else if (err instanceof Error) {
+      errorMessage = err.message;
+    } else if (typeof err === 'string') {
+      errorMessage = err;
+    } else {
+      errorMessage = 'An unknown error occurred';
+    }
+    onError(errorMessage);
+  }
+
+  const handleDrop = (acceptedFiles: File[], autoReplace?:boolean) => {
     onError("")
+    const existingIds = new Set(files.map(({ id }) => id));
     const newFilesWithIds = acceptedFiles
       .map((file) => {
         const id = `${file.name}-${file.lastModified}-${file.size}`
         return { id, file }
       })
-      .filter(({ id }) => !files.map(({ id: mId }) => mId).includes(id))
+      .filter(({ id }) => !existingIds.has(id))
 
     if (newFilesWithIds.length > 0) {
+      const allFiles = autoReplace ? newFilesWithIds : newFilesWithIds.concat(files);
       try {
-        const validatedFiles = validator
-          ? validator(newFilesWithIds.concat(files))
-          : newFilesWithIds.concat(files)
-        setFiles(validatedFiles as FileWithId[])
-        onFilesChanged(validatedFiles)
+        if (validator) {
+          validator(allFiles);
+        }        
+        setFiles(allFiles)
+        onFilesChanged(allFiles)
       } catch (err) {
-        if (err instanceof z.ZodError) {
-          if (err.issues[0]) {
-            onError(err.issues.map((issue) => issue.message).join("\n"))
-          } else if (err.message) {
-            onError(err.message)
-          }
-        }
+        handleValidationError(err);
       }
     }
   }
-  const handleRemove = (index: number) => {
-    setFiles((prev) => {
-      const files = prev.filter((_, i) => i !== index)
-      onFilesChanged(files)
-      return files
-    })
-  }
+
+  const handleRemove = useCallback((index: number) => {
+    if (index >= 0 && index < files.length) {
+      const newFiles = files.filter((_, i) => i !== index)
+      setFiles(newFiles)
+    }
+  }, [files, setFiles]);
 
   return { files, handleDrop, onError, handleRemove, reset }
 }
+
 export default useFileInput

@@ -55,7 +55,7 @@ const Dropzone = ({
     maxFiles,
     multiple,
     accept: acceptAll ? undefined : buildAcceptedObjects(acceptedMimeTypes),
-    onDrop: handleDrop,
+    onDrop:  (files)=>handleDrop(files, maxFiles ===1 && maxFilesReached()),
   })
 
   const maxFilesReached = useCallback(
